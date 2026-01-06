@@ -49,7 +49,7 @@ The primary objective of **TravelBuddy** is to provide a centralized, efficient,
 ## 📸 Screenshots
 
 ### 🔐 User Authentication
-**Login Page**  
+[**Login Page**](https://nobara.pythonanywhere.com/accounts/login/)
 <img width="1402" height="972" alt="Login Page" src="https://github.com/user-attachments/assets/57dffa3f-81e4-43b0-ac16-e5efa52324f3" />
 
 **Register Page**  
