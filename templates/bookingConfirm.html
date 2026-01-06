@@ -1,0 +1,297 @@
+<!--{% extends 'user_header_footer.html' %}-->
+
+    <!--<form>-->
+    <!--    <label>Hotel_ID: </label>-->
+    <!--    <input value = "{{ hotel_id }}">-->
+    <!--    <label>User_ID: </label>-->
+    <!--    <input value = "{{ user_id }}"-->
+    <!--</form>-->
+
+
+
+
+<!--  <meta charset="UTF-8">-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--  <title>Hotel Booking</title>-->
+<!--  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">-->
+<!--  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">-->
+<!--  <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">-->
+<!--  {% block style %}-->
+<!--    .booking-form-card {-->
+<!--      border-radius: 10px;-->
+<!--      overflow: hidden;-->
+<!--      border: none;-->
+<!--    }-->
+<!--    .form-section {-->
+<!--      background-color: #f8f9fa;-->
+<!--      border-radius: 8px;-->
+<!--    }-->
+<!--    .hotel-img {-->
+<!--      height: 250px;-->
+<!--      object-fit: cover;-->
+<!--    }-->
+<!--    .price-display {-->
+<!--      font-size: 24px;-->
+<!--      color: #0d6efd;-->
+<!--    }-->
+<!--    .date-input-container {-->
+<!--      position: relative;-->
+<!--    }-->
+<!--    .date-input-container i {-->
+<!--      position: absolute;-->
+<!--      right: 10px;-->
+<!--      top: 50%;-->
+<!--      transform: translateY(-50%);-->
+<!--      pointer-events: none;-->
+<!--    }-->
+<!--  {% endblock style %}-->
+
+<!--{% block mainContent %}-->
+<!--  <div class="container py-5">-->
+<!--    <div class="row justify-content-center">-->
+<!--      <div class="col-lg-8">-->
+<!--        <div class="card shadow booking-form-card">-->
+<!--          <h3 class="card-header bg-primary text-white py-3">-->
+<!--            <i class="bi bi-calendar-check me-2"></i>Book Your Stay-->
+<!--          </h3>-->
+
+<!--          <div class="card-body p-4">-->
+<!--            <div class="row mb-4">-->
+<!--              <div class="col-md-4 mb-3 mb-md-0">-->
+<!--                <img src="{{ room.roomImage.url }}" class="img-fluid rounded hotel-img w-100" alt="{{ room.name }}" onerror="this.src='/api/placeholder/400/250'">-->
+<!--              </div>-->
+<!--              <div class="col-md-8">-->
+<!--                <h3>{{ room.name }}</h3>-->
+<!--                <div class="d-flex flex-wrap gap-2 mb-2">-->
+<!--                  <span class="badge bg-light text-dark"><i class="bi bi-building me-1"></i>{{ room.type }}</span>-->
+<!--                  <span class="badge bg-light text-dark"><i class="bi bi-geo-alt me-1"></i>{{ room.place }}</span>-->
+<!--                </div>-->
+<!--                <p class="mb-2">{{ room.Description|truncatechars:150 }}</p>-->
+<!--                <div class="price-display">-->
+<!--                  <span>₹{{ room.pricePerNight }}</span>-->
+<!--                  <small class="text-muted">per night</small>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <form id="bookingForm" method="post" action="/bookingConfirmation/">-->
+<!--              {% csrf_token %}-->
+<!--              <input type="hidden" name="hotel_id" value="{{ room.id }}">-->
+<!--              <input type="hidden" name="user_id" value="{{ user.id }}">-->
+<!--              <input type="hidden" name="price_per_night" value="{{ room.pricePerNight }}">-->
+
+<!--              <div class="form-section p-3 mb-4">-->
+<!--                <h4 class="mb-3"><i class="bi bi-calendar-range me-2"></i>Choose Your Dates</h4>-->
+
+<!--                <div class="row g-3">-->
+<!--                  <div class="col-md-6">-->
+<!--                    <label for="checkInDate" class="form-label">Check-in Date <span class="text-danger">*</span></label>-->
+<!--                    <div class="date-input-container">-->
+<!--                      <input type="date" class="form-control" id="checkInDate" name="check_in_date" required min="{{ today_date }}">-->
+<!--                      <i class="bi bi-calendar3"></i>-->
+<!--                    </div>-->
+<!--                    <small class="text-muted">Check-in time: After 2:00 PM</small>-->
+<!--                  </div>-->
+
+<!--                  <div class="col-md-6">-->
+<!--                    <label for="checkOutDate" class="form-label">Check-out Date <span class="text-danger">*</span></label>-->
+<!--                    <div class="date-input-container">-->
+<!--                      <input type="date" class="form-control" id="checkOutDate" name="check_out_date" required min="{{ tomorrow_date }}">-->
+<!--                      <i class="bi bi-calendar3"></i>-->
+<!--                    </div>-->
+<!--                    <small class="text-muted">Check-out time: Before 12:00 PM</small>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="form-section p-3 mb-4">-->
+<!--                <h4 class="mb-3"><i class="bi bi-people me-2"></i>Guest Information</h4>-->
+
+<!--                <div class="row g-3">-->
+<!--                  <div class="col-md-6">-->
+<!--                    <label for="adults" class="form-label">Number of Adults <span class="text-danger">*</span></label>-->
+<!--                    <select class="form-select" id="adults" name="adults" required>-->
+<!--                      <option value="1">1 Adult</option>-->
+<!--                      <option value="2" selected>2 Adults</option>-->
+<!--                      <option value="3">3 Adults</option>-->
+<!--                      <option value="4">4 Adults</option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+
+<!--                  <div class="col-md-6">-->
+<!--                    <label for="children" class="form-label">Number of Children</label>-->
+<!--                    <select class="form-select" id="children" name="children">-->
+<!--                      <option value="0" selected>No Children</option>-->
+<!--                      <option value="1">1 Child</option>-->
+<!--                      <option value="2">2 Children</option>-->
+<!--                      <option value="3">3 Children</option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="form-section p-3 mb-4">-->
+<!--                <h4 class="mb-3"><i class="bi bi-credit-card me-2"></i>Payment Details</h4>-->
+
+<!--                <div class="mb-3">-->
+<!--                  <label class="form-label">Payment Method <span class="text-danger">*</span></label>-->
+<!--                  <div class="d-flex flex-wrap gap-3">-->
+<!--                    <div class="form-check">-->
+<!--                      <input class="form-check-input" type="radio" name="payment_method" id="payAtHotel" value="pay_at_hotel" checked>-->
+<!--                      <label class="form-check-label" for="payAtHotel">-->
+<!--                        Pay at Hotel-->
+<!--                      </label>-->
+<!--                    </div>-->
+<!--                    <div class="form-check">-->
+<!--                      <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="credit_card">-->
+<!--                      <label class="form-check-label" for="creditCard">-->
+<!--                        Credit Card-->
+<!--                      </label>-->
+<!--                    </div>-->
+<!--                    <div class="form-check">-->
+<!--                      <input class="form-check-input" type="radio" name="payment_method" id="upi" value="upi">-->
+<!--                      <label class="form-check-label" for="upi">-->
+<!--                        UPI-->
+<!--                      </label>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--                <div id="priceCalculation" class="p-3 border rounded">-->
+<!--                  <div class="d-flex justify-content-between mb-2">-->
+<!--                    <span>Room Charge (<span id="nights">0</span> nights × ₹{{ room.pricePerNight }})</span>-->
+<!--                    <span>₹<span id="roomTotal">0</span></span>-->
+<!--                  </div>-->
+<!--                  <div class="d-flex justify-content-between mb-2">-->
+<!--                    <span>Taxes & Fees (18%)</span>-->
+<!--                    <span id="taxes">₹0</span>-->
+<!--                  </div>-->
+<!--                  <div class="d-flex justify-content-between mt-2 pt-2 border-top">-->
+<!--                    <strong>Total Amount</strong>-->
+<!--                    <strong class="text-primary" id="totalAmount">₹0</strong>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div class="form-check mb-4">-->
+<!--                <input class="form-check-input" type="checkbox" id="termsCheck" required>-->
+<!--                <label class="form-check-label" for="termsCheck">-->
+<!--                  I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>-->
+<!--                </label>-->
+<!--              </div>-->
+
+<!--              <div class="d-grid">-->
+<!--                <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>-->
+<!--              </div>-->
+<!--            </form>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <!-- Terms and Conditions Modal -->
+<!--  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header">-->
+<!--          <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>-->
+<!--          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--        </div>-->
+<!--        <div class="modal-body">-->
+<!--          <h6>Cancellation Policy</h6>-->
+<!--          <p>Free cancellation until 24 hours before check-in. Cancellations made less than 24 hours before check-in are subject to a penalty of one night's stay.</p>-->
+
+<!--          <h6>Check-in/Check-out Policy</h6>-->
+<!--          <p>Check-in time is 2:00 PM. Check-out time is 12:00 PM. Early check-in or late check-out may result in additional charges.</p>-->
+
+<!--          <h6>Payment Policy</h6>-->
+<!--          <p>For "Pay at Hotel" option, a valid credit card is required to guarantee the reservation. For prepaid bookings, the full amount will be charged at the time of booking.</p>-->
+<!--        </div>-->
+<!--        <div class="modal-footer">-->
+<!--          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>-->
+<!--  <script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+      // Set min dates for check-in and check-out
+<!--      const today = new Date();-->
+<!--      const tomorrow = new Date(today);-->
+<!--      tomorrow.setDate(tomorrow.getDate() + 1);-->
+
+      // Format dates for input min attribute
+<!--      document.getElementById('checkInDate').min = today.toISOString().split('T')[0];-->
+<!--      document.getElementById('checkOutDate').min = tomorrow.toISOString().split('T')[0];-->
+
+      // Initialize date pickers
+<!--      flatpickr("#checkInDate", {-->
+<!--        minDate: "today",-->
+<!--        onChange: function(selectedDates, dateStr) {-->
+          // Set min date for checkout to be at least the day after check-in
+<!--          const nextDay = new Date(selectedDates[0]);-->
+<!--          nextDay.setDate(nextDay.getDate() + 1);-->
+
+<!--          flatpickr("#checkOutDate", {-->
+<!--            minDate: nextDay-->
+<!--          }).set("minDate", nextDay);-->
+
+          // If checkout date is now invalid, update it
+<!--          const checkoutDate = new Date(document.getElementById('checkOutDate').value);-->
+<!--          if (checkoutDate <= new Date(dateStr)) {-->
+<!--            document.getElementById('checkOutDate').value = nextDay.toISOString().split('T')[0];-->
+<!--          }-->
+
+<!--          calculatePrice();-->
+<!--        }-->
+<!--      });-->
+
+<!--      flatpickr("#checkOutDate", {-->
+<!--        minDate: tomorrow,-->
+<!--        onChange: function() {-->
+<!--          calculatePrice();-->
+<!--        }-->
+<!--      });-->
+
+      // Calculate price based on selected dates
+<!--      function calculatePrice() {-->
+<!--        const checkInDate = new Date(document.getElementById('checkInDate').value);-->
+<!--        const checkOutDate = new Date(document.getElementById('checkOutDate').value);-->
+
+<!--        if (checkInDate && checkOutDate && checkOutDate > checkInDate) {-->
+          // Calculate number of nights
+<!--          const timeDiff = checkOutDate - checkInDate;-->
+<!--          const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));-->
+
+          // Get price per night
+<!--          const pricePerNight = {{ room.pricePerNight|default:0 }};-->
+
+          // Calculate totals
+<!--          const roomTotal = nights * pricePerNight;-->
+<!--          const taxes = roomTotal * 0.18;-->
+<!--          const totalAmount = roomTotal + taxes;-->
+
+          // Update display
+<!--          document.getElementById('nights').textContent = nights;-->
+<!--          document.getElementById('roomTotal').textContent = roomTotal.toFixed(2);-->
+<!--          document.getElementById('taxes').textContent = '₹' + taxes.toFixed(2);-->
+<!--          document.getElementById('totalAmount').textContent = '₹' + totalAmount.toFixed(2);-->
+<!--        }-->
+<!--      }-->
+
+      // Validate form on submit
+<!--      document.getElementById('bookingForm').addEventListener('submit', function(event) {-->
+<!--        const checkInDate = new Date(document.getElementById('checkInDate').value);-->
+<!--        const checkOutDate = new Date(document.getElementById('checkOutDate').value);-->
+
+<!--        if (!checkInDate || !checkOutDate || checkOutDate <= checkInDate) {-->
+<!--          event.preventDefault();-->
+<!--          alert('Please select valid check-in and check-out dates. Check-out date must be after check-in date.');-->
+<!--        }-->
+<!--      });-->
+<!--    });-->
+<!--  </script>-->
+<!--{% endblock mainContent %}-->

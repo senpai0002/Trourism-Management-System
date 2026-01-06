@@ -1,0 +1,178 @@
+{% extends 'user_header_footer.html' %}
+
+{% block user_header_footer_style %}
+      body {
+    background-color: #f8f9fa;
+  }
+
+  .hotel-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .hotel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+
+  .object-fit-cover {
+    object-fit: cover;
+  }
+
+  .hover-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hover-effect::after {
+    content: "Book Now";
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    background: #0d6efd;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: top 0.3s ease;
+    font-weight: 500;
+  }
+
+  .hover-effect:hover::after {
+    top: 20px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .hotel-card .card-body {
+      padding: 1rem;
+    }
+
+    .hover-effect::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 576px) {
+    h3.card-title {
+      font-size: 1.3rem;
+    }
+  }
+
+  .capitalize{
+    text-transform: capitalize
+  }
+{% endblock user_header_footer_style %}
+
+{% block mainContent %}
+
+    <div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="text-center mb-4">Explore the World with Us</h3>
+          <form class="row g-3 align-items-end justify-content-center" method = "get">
+            <div class="col-md-4 col-sm-12">
+              <label for="destination" class="form-label">City</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <input type="text" class="form-control" id="city" placeholder="Where to explore?" name = "city">
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+              <label for="tourist_spots" class="form-label">Tourist Spots</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <input type="text" class="form-control" id="tour_spot" placeholder="Places to see" name = "tour_spot">
+              </div>
+            </div>
+            <!--<div class="col-md-4 col-sm-12">-->
+            <!--  <label for="hotelType" class="form-label">Hotel Type</label>-->
+            <!--  <select class="form-select" name="hotelType">-->
+            <!--    <option selected value = "">Choose...</option>-->
+            <!--    <option value="standard">Standard</option>-->
+            <!--    <option value="deluxe">Deluxe</option>-->
+            <!--    <option value="premium">Premium</option>-->
+            <!--  </select>-->
+            <!--</div>-->
+            <div class="col-md-3 col-sm-12">
+              <button type="submit" class="btn btn-primary w-100">Find Tours</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hotel Listings Section -->
+<div class="container mb-5">
+
+    {% if not tour_list %}
+      <!-- No results message (hidden by default) -->
+      <div class="text-center py-5" id="noResults">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <h3 class="mt-3">No Tours found</h3>
+        <p class="text-muted">Try adjusting your search criteria</p>
+      </div>
+
+      {% else %}
+
+  <h2 class="text-center mb-4">Available Packages</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      {% for tour in tour_list %}
+      <form method = "post" id = "tourBookingForm{{ tour.id }}" value = "{{ tour.id }}" >
+          {% csrf_token %}
+          <input type = "hidden" name = "tour_id" id = "tour_id_{{ tour.id }}" value = "{{ tour.id }}">
+          <!--<input type = "hidden" value = "{{ user.id }}" name = "user_id">-->
+      <div class="card mb-4 hotel-card shadow-sm hover-effect" onclick="handleFormSubmit({{ tour.id }})">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="{{tour.tourImage.url}}" class="img-fluid rounded-start h-100 w-100 object-fit-cover" alt="{{ tour.name }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body d-flex flex-column h-100">
+              <div>
+                <h3 class="card-title">{{ tour.tour_name }}</h3>
+                <div class="d-flex flex-wrap gap-3 mb-2">
+                  <!--<span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ tour.id }}</span>-->
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ tour.city }}</span>
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ tour.days }} Days and {{ tour.nights }} Nights</span>
+                </div>
+                <p class="card-text">{{ tour.description }}</p>
+              </div>
+              <div class="mt-auto text-end">
+                <div class="d-flex justify-content-between align-items-center">
+                  <button class="btn btn-outline-primary btn-sm">View Details</button>
+                  <div>
+                    <p class="text-muted mb-0">per person</p>
+                    <h4 class="text-primary mb-0">₹{{ tour.price }}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+  </div>
+  </div>
+</div>
+
+            <script>
+                // function bookingConfirmation(){
+                //     window.location.href = "/bookingConfirmation/"
+                // }
+                function handleFormSubmit(tourId){
+                    const form = document.getElementById('tourBookingForm'+tourId);
+                    form.action = "/tourBookingConfirmation/";
+                    form.submit();
+
+                }
+
+            </script>
+
+{% endblock mainContent %}

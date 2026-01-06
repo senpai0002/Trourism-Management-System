@@ -1,0 +1,318 @@
+{% extends "user_header_footer.html" %}
+    {% block user_header_footer_style %}
+      body {
+    background-color: #f8f9fa;
+  }
+
+  .hotel-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .hotel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+
+  .object-fit-cover {
+    object-fit: cover;
+  }
+
+  .hover-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hover-effect::after {
+    content: "Reserve Now";
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    background: #0d6efd;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: top 0.3s ease;
+    font-weight: 500;
+  }
+
+  .hover-effect:hover::after {
+    top: 20px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .hotel-card .card-body {
+      padding: 1rem;
+    }
+
+    .hover-effect::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 576px) {
+    h3.card-title {
+      font-size: 1.3rem;
+    }
+  }
+
+  .capitalize{
+    text-transform: capitalize
+  }
+
+    .flightImage{
+        max-height: 200px;
+    }
+
+
+    {% endblock user_header_footer_style %}
+
+
+
+{% block mainContent %}
+
+
+
+<section class="py-5">
+        <div class="container">
+            <div class="search-form">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs nav-justified" id="bookingTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if active_tab == 'buses' %}active{% endif %}" id="bus-tab" data-bs-toggle="tab" data-bs-target="#bus-content" type="button" role="tab" aria-controls="bus-content" aria-selected="true">
+                            <i class="bi bi-bus-front me-2"></i>Bus
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if active_tab == 'flights' %}active{% endif %}" id="flight-tab" data-bs-toggle="tab" data-bs-target="#flight-content" type="button" role="tab" aria-controls="flight-content" aria-selected="false">
+                            <i class="bi bi-airplane me-2"></i>Flight
+                        </button>
+                    </li>
+                </ul>
+                <br>
+                <!-- Tab Content -->
+                <div class="tab-content" id="bookingTabsContent">
+                    <!-- Bus Tab Content -->
+                    <div class="tab-pane fade {% if active_tab == 'buses' %}show active{% endif %}" id="bus-content" role="tabpanel" aria-labelledby="bus-tab">
+                        <form class="row g-3 align-items-end justify-content-center">
+                            <input type="hidden" name="tab_type" value="buses">
+                            <div class="col-md-4 col-sm-12">
+                                <label for="busFrom" class="form-label">
+                                    <i class="bi bi-geo-alt-fill me-1 text-primary"></i> From
+                                </label>
+                                <input type="text" class="form-control" name="busFrom" placeholder="Departure city">
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <label for="busTo" class="form-label">
+                                    <i class="bi bi-geo-alt-fill me-1 text-primary"></i> To
+                                </label>
+                                <input type="text" class="form-control" name="busTo" placeholder="Destination city">
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                <label for="busDate" class="form-label">
+                                    <i class="bi bi-calendar3 me-1 text-primary"></i> Date
+                                </label>
+                                <input type="date" class="form-control" id="busDate">
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-search me-1"></i> Find Buses
+                                </button>
+                            </div>
+                        </form>
+
+
+<div class="container mb-5"><br>
+
+    {% if not buses_list %}
+      <!-- No results message (hidden by default) -->
+      <div class="text-center py-5" id="noResults">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <h3 class="mt-3">No Bus found</h3>
+        <p class="text-muted">Try adjusting your search criteria</p>
+      </div>
+
+      {% else %}
+
+
+  <h2 class="text-center mb-4">Available Buses</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      {% for bus in buses_list %}
+      <form method = "post" id = "busBookingForm{{ bus.id }}">
+          {% csrf_token %}
+      <div class="card mb-4 hotel-card shadow-sm hover-effect" >
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="{{bus.busImage.url}}" class="img-fluid rounded-start h-100 w-100 object-fit-cover" alt="{{ bus.name }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body d-flex flex-column h-100">
+              <div>
+                <h3 class="card-title">{{ bus.bus_name }}</h3>
+                <div class="d-flex flex-wrap gap-3 mb-2">
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ bus.dep_city }}</span>
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-building me-1"></i>{{ bus.des_city }}</span>
+                </div>
+                <p class="card-text">{{ bus.Description }}</p>
+              </div>
+              <div class="mt-auto text-end">
+                <div class="d-flex justify-content-between align-items-center">
+                  <button class="btn btn-outline-primary btn-sm">View Details</button>
+                  <div>
+                    <p class="text-muted mb-0">Reserve At</p>
+                    <h4 class="text-primary mb-0">₹{{ bus.price }}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+
+    {% endif %}
+  </div>
+</div>
+
+
+</div>
+
+                    <!-- Flight Tab Content -->
+                    <div class="tab-pane fade {% if active_tab == 'flights' %}show active{% endif %}" id="flight-content" role="tabpanel" aria-labelledby="flight-tab">
+                        <form class="row g-3 align-items-end justify-content-center">
+                            <input type="hidden" name="tab_type" value="flights">
+                            <div class="col-md-4 col-sm-12">
+                                <label for="flightFrom" class="form-label">
+                                    <i class="bi bi-geo-alt-fill me-1 text-primary"></i> From
+                                </label>
+                                <input type="text" class="form-control" id="flightFrom" name = "flightFrom" placeholder="Departure airport">
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <label for="flightTo" class="form-label">
+                                    <i class="bi bi-geo-alt-fill me-1 text-primary"></i> To
+                                </label>
+                                <input type="text" class="form-control" id="flightTo" name = "flightTo" placeholder="Destination airport">
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                <label for="departDate" class="form-label">
+                                    <i class="bi bi-calendar3 me-1 text-primary"></i> Date
+                                </label>
+                                <input type="date" class="form-control" id="departDate">
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                <button type="submit" class="btn btn-primary w-100" id = "find-flights-button">
+                                    <i class="bi bi-search me-1"></i> Find Flights
+                                </button>
+                            </div>
+                        </form>
+
+
+                        <div class="container mb-5"><br>
+
+    {% if not flights_list %}
+      <!-- No results message (hidden by default) -->
+      <div class="text-center py-5" id="noResults">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <h3 class="mt-3">No flights found</h3>
+        <p class="text-muted">Try adjusting your search criteria</p>
+      </div>
+
+      {% else %}
+
+
+  <h2 class="text-center mb-4">Available Buses</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      {% for flight in flights_list %}
+      <form method = "post" id = "flightBookingForm{{ flight.id }}" >
+          {% csrf_token %}
+      <div class="card mb-4 hotel-card shadow-sm hover-effect" onclick="#submission">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="{{flight.image.url}}" class="img-fluid rounded-start h-100 w-100 object-fit-cover flightImage" alt="{{ flight.name }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body d-flex flex-column h-100">
+              <div>
+                <h3 class="card-title">{{ flight.name }}</h3>
+                <div class="d-flex flex-wrap gap-3 mb-2">
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ flight.dep_airport }}</span>
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-building me-1"></i>{{ flight.des_airport }}</span>
+                </div>
+                <p class="card-text">{{ flight.description }}</p>
+              </div>
+              <div class="mt-auto text-end">
+                <div class="d-flex justify-content-between align-items-center">
+                  <button class="btn btn-outline-primary btn-sm">View Details</button>
+                  <div>
+                    <p class="text-muted mb-0">Reserve At</p>
+                    <h4 class="text-primary mb-0">₹{{ flight.price }}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+
+    {% endif %}
+  </div>
+</div>
+
+
+</div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+<!-- Hotel Listings Section -->
+
+
+            <script>
+
+
+//             function setTabParam(event) {
+//     event.preventDefault();
+//     let form = event.target;
+//     let queryString = new URLSearchParams(new FormData(form)).toString();
+//     window.location.href = form.action + "?" + queryString + "&tab=flights";
+// }
+
+// <script>
+// document.addEventListener("DOMContentLoaded", function () {
+//     let params = new URLSearchParams(window.location.search);
+//     let activeTab = params.get("tab");
+
+//     if (activeTab === "flights") {
+//         document.getElementById("flight-tab").classList.add("active");
+//     } else {
+//         document.getElementById("bus-tab").classList.add("active");
+//     }
+// });
+</script>
+
+
+            </script>
+
+{% endblock mainContent %}

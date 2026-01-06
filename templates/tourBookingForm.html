@@ -1,0 +1,458 @@
+{% extends 'user_header_footer.html' %}
+
+{% block header_footer_head %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+{% endblock header_footer_head %}
+
+{% block user_header_footer_style %}
+  .booking-form-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: none;
+  }
+  .form-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  .tour-img {
+    height: 250px;
+    object-fit: cover;
+  }
+  .price-display {
+    font-size: 24px;
+    color: #0d6efd;
+  }
+  .adventure-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .adventure-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  .adventure-card.selected {
+    border: 2px solid #0d6efd;
+  }
+  .member-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+  .remove-member {
+    cursor: pointer;
+    color: #dc3545;
+  }
+{% endblock user_header_footer_style %}
+
+{% block mainContent %}
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card shadow booking-form-card">
+          <h3 class="card-header bg-primary text-white py-3">
+            <i class="bi bi-compass me-2"></i>Book Your Adventure Tour
+          </h3>
+
+          <div class="card-body p-4">
+            <div class="row mb-4">
+              <div class="col-md-4 mb-3 mb-md-0">
+                <img src="{{ tour_image.url  }}" class="img-fluid rounded tour-img w-100" alt="{{ tour.name }}">
+              </div>
+              <div class="col-md-8">
+                <h3>{{ tour_name }}</h3>
+                <!--<h3>{{ tour_id }}</h3>-->
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                  <span class="badge bg-light text-dark"><i class="bi bi-geo-alt me-1"></i>{{ tour_city|default:"Himachal Pradesh" }}</span>
+                  <span class="badge bg-light text-dark"><i class="bi bi-clock me-1"></i>{{ tour_duration }} Days</span>
+                </div>
+                <p class="mb-2">{{ tour_description|truncatechars:150 }}</p>
+                <div class="price-display">
+                  <span>₹{{ tour_price }}</span>
+                  <small class="text-muted">per person</small>
+                </div>
+              </div>
+            </div>
+
+            <form id="tourBookingForm" method="post" action = "/tourPaymentForm/">
+              {% csrf_token %}
+              <input type="hidden" name="tour_id" value="{{ tour_id|default:'1' }}">
+              <input type="hidden" name="totalMembers" id="totalMembersInput" value="1">
+              <input type="hidden" name="selectedAdventures" id="selectedAdventuresInput" value="">
+              <input type="hidden" name="totalAmountInput" id="totalPayInput" value="">
+
+              <div class="form-section p-3 mb-4">
+                <h4 class="mb-3"><i class="bi bi-calendar-range me-2"></i>Tour Dates</h4>
+
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="startDate" class="form-label">Starting Date <span class="text-danger">*</span></label>
+                    <div class="date-input-container">
+                      <input type="date" class="form-control" id="startDate" name="startDate" required min="{{ today_date }}">
+                    </div>
+                    <small class="text-muted">Tour starts at 8:00 AM</small>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="endDate" class="form-label">Ending Date</label>
+                    <div class="date-input-container">
+                      <input type="date" class="form-control" id="endDate" name="endDate" readonly>
+                    </div>
+                    <small class="text-muted">Based on {{ tour_duration }}-day tour duration</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section p-3 mb-4">
+                <h4 class="mb-3"><i class="bi bi-people me-2"></i>Tour Members</h4>
+
+                <div id="membersContainer">
+                  <div class="member-item" id="member-1">
+                    <div class="row">
+                      <div class="col-md-11">
+                        <div class="row g-3">
+                          <div class="col-md-6">
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="memberName[]" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label class="form-label">Age <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="memberAge[]" min="1" max="99" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" name="memberGender[]">
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
+                              <option value="other">Other</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-1 d-flex align-items-center justify-content-center pt-4">
+                        <!-- No remove button for first member -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="button" id="addMemberBtn" class="btn btn-outline-primary">
+                    <i class="bi bi-plus-circle me-2"></i>Add Member
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-section p-3 mb-4">
+                <h4 class="mb-3"><i class="bi bi-compass me-2"></i>Available Adventures</h4>
+                <p class="text-muted mb-3">Choose optional adventures to enhance your tour experience</p>
+
+                <div class="row g-3" id="adventuresContainer">
+                  <div class="col-md-6">
+                    <div class="card adventure-card h-100" data-adventure-id="1" data-adventure-price="1500">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title">River Rafting</h5>
+                          <div class="form-check">
+                            <input class="form-check-input adventure-checkbox" type="checkbox" id="adventure-1">
+                          </div>
+                        </div>
+                        <p class="card-text">Experience thrilling white water rafting through scenic river valleys.</p>
+                        <div class="text-primary fw-bold">+ ₹1,500 per person</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="card adventure-card h-100" data-adventure-id="2" data-adventure-price="2000">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title">Paragliding</h5>
+                          <div class="form-check">
+                            <input class="form-check-input adventure-checkbox" type="checkbox" id="adventure-2">
+                          </div>
+                        </div>
+                        <p class="card-text">Soar through the skies and enjoy breathtaking aerial views of the mountains.</p>
+                        <div class="text-primary fw-bold">+ ₹2,000 per person</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="card adventure-card h-100" data-adventure-id="3" data-adventure-price="1200">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title">Zip Lining</h5>
+                          <div class="form-check">
+                            <input class="form-check-input adventure-checkbox" type="checkbox" id="adventure-3">
+                          </div>
+                        </div>
+                        <p class="card-text">Zip across valleys and enjoy an adrenaline-filled experience.</p>
+                        <div class="text-primary fw-bold">+ ₹1,200 per person</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="card adventure-card h-100" data-adventure-id="4" data-adventure-price="1800">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title">Night Safari</h5>
+                          <div class="form-check">
+                            <input class="form-check-input adventure-checkbox" type="checkbox" id="adventure-4">
+                          </div>
+                        </div>
+                        <p class="card-text">Explore the wilderness after dark and spot nocturnal wildlife.</p>
+                        <div class="text-primary fw-bold">+ ₹1,800 per person</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section p-3 mb-4">
+                <h4 class="mb-3"><i class="bi bi-credit-card me-2"></i>Payment Details</h4>
+
+                <div id="priceCalculation" class="p-3 border rounded">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Base Tour Price (<span id="memberCount">1</span> × ₹{{ tour_price }})</span>
+                    <span>₹ <span id="baseTotalPrice">{{ tour_price }}</span></span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Adventure Activities</span>
+                    <span>₹ <span id="adventureTotal">0</span></span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Taxes & Fees (5%)</span>
+                    <span>₹ <span id="taxesAmount">600</span></span>
+                  </div>
+                  <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+                    <strong>Total Amount</strong>
+                    <strong>₹ <strong class="text-primary" id="totalAmount">12600</strong></strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                <label class="form-check-label" for="termsCheck">
+                  I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                </label>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Book Now</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms and Conditions Modal -->
+  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6>Cancellation Policy</h6>
+          <p>- Full refund if cancelled 30 days before the tour date</p>
+          <p>- 50% refund if cancelled 15-29 days before the tour date</p>
+          <p>- No refund if cancelled less than 15 days before the tour date</p>
+
+          <h6>Tour Guidelines</h6>
+          <p>- Participants must be physically fit for adventure activities</p>
+          <p>- Participants under 18 must be accompanied by an adult</p>
+          <p>- The company reserves the right to modify the itinerary due to weather conditions</p>
+
+          <h6>Payment Policy</h6>
+          <p>- 50% advance payment to confirm booking</p>
+          <p>- Remaining balance to be paid 7 days before the tour date</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Constants
+    const BASE_PRICE = {{ tour_price }};
+    const TAX_RATE = 0.05;
+    const TOUR_DURATION = {{ tour_duration }};
+
+    // Elements
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const addMemberBtn = document.getElementById('addMemberBtn');
+    const membersContainer = document.getElementById('membersContainer');
+    const memberCountDisplay = document.getElementById('memberCount');
+    const baseTotalPriceDisplay = document.getElementById('baseTotalPrice');
+    const adventureTotalDisplay = document.getElementById('adventureTotal');
+    const taxesAmountDisplay = document.getElementById('taxesAmount');
+    const totalAmountDisplay = document.getElementById('totalAmount');
+    const adventureCards = document.querySelectorAll('.adventure-card');
+
+    let memberCount = 1;
+    let selectedAdventures = [];
+
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+      // Format dates as YYYY-MM-DD for the input's min attribute
+      const formatDateForInput = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+    const todayFormatted = formatDateForInput(today);
+    startDateInput.min = todayFormatted;
+
+    // Calculate end date based on start date
+    startDateInput.addEventListener('change', function() {
+      if (startDateInput.value) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + TOUR_DURATION - 1);
+
+        // Format the date as YYYY-MM-DD for the input
+        const year = endDate.getFullYear();
+        const month = String(endDate.getMonth() + 1).padStart(2, '0');
+        const day = String(endDate.getDate()).padStart(2, '0');
+        endDateInput.value = `${year}-${month}-${day}`;
+      }
+    });
+
+    // Add member functionality
+    addMemberBtn.addEventListener('click', function() {
+      memberCount++;
+      const memberId = `member-${memberCount}`;
+
+      const memberElement = document.createElement('div');
+      memberElement.className = 'member-item';
+      memberElement.id = memberId;
+
+      memberElement.innerHTML = `
+        <div class="row">
+          <div class="col-md-11">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="memberName[]" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Age <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="memberAge[]" min="1" max="99" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Gender</label>
+                <select class="form-select" name="memberGender[]">
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex align-items-center justify-content-center pt-4">
+            <i class="bi bi-x-circle fs-5 remove-member" data-member-id="${memberId}"></i>
+          </div>
+        </div>
+      `;
+
+      membersContainer.appendChild(memberElement);
+      updateTotalPrice();
+
+      // Add event listener for the remove button
+      const removeBtn = memberElement.querySelector('.remove-member');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+          const memberId = this.getAttribute('data-member-id');
+          const memberElement = document.getElementById(memberId);
+          if (memberElement) {
+            memberElement.remove();
+            memberCount--;
+            updateTotalPrice();
+          }
+        });
+      }
+    });
+
+    // Adventure selection functionality
+    adventureCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const checkbox = this.querySelector('.adventure-checkbox');
+        checkbox.checked = !checkbox.checked;
+
+        if (checkbox.checked) {
+          this.classList.add('selected');
+        } else {
+          this.classList.remove('selected');
+        }
+
+        updateTotalPrice();
+      });
+    });
+
+    // Update price calculation
+    function updateTotalPrice() {
+      // Update member count display
+      memberCountDisplay.textContent = memberCount;
+
+      // Calculate base price
+      const baseTotal = BASE_PRICE * memberCount;
+      baseTotalPriceDisplay.textContent = baseTotal;
+
+      // Calculate adventure price
+      let adventureTotal = 0;
+      selectedAdventures = [];
+
+      adventureCards.forEach(card => {
+        const checkbox = card.querySelector('.adventure-checkbox');
+        const adventureId = card.getAttribute('data-adventure-id');
+        const adventurePrice = parseInt(card.getAttribute('data-adventure-price'));
+
+        if (checkbox.checked) {
+          adventureTotal += adventurePrice * memberCount;
+          selectedAdventures.push(adventureId);
+        }
+      });
+
+      adventureTotalDisplay.textContent = adventureTotal;
+
+      // Calculate taxes and total
+      const subtotal = baseTotal + adventureTotal;
+      const taxes = Math.round(subtotal * TAX_RATE);
+      const total = subtotal + taxes;
+
+      taxesAmountDisplay.textContent = taxes;
+      totalAmountDisplay.textContent = total;
+
+      // Update hidden fields
+      document.getElementById('totalMembersInput').value = memberCount;
+      document.getElementById('selectedAdventuresInput').value = selectedAdventures.join(',');
+      document.getElementById('totalPayInput').value = total;
+    }
+
+    // Initialize price calculation
+    updateTotalPrice();
+  });
+  </script>
+{% endblock mainContent %}
+
+{% block user_header_footer_script %}
+{% endblock user_header_footer_script %}

@@ -1,0 +1,203 @@
+{% extends "header_footer.html" %}
+{% load static %}
+
+{% block style %}
+
+    /* Carousel Styling */
+    .carousel-container {
+      margin: 2rem auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .carousel-item {
+      height: 60vh;
+      min-height: 400px;
+      max-height: 700px;
+    }
+
+    .carousel-item img {
+      object-fit: cover;
+      height: 100%;
+      width: 100%;
+    }
+
+    .carousel-caption {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 80%;
+      margin: 0 auto;
+      bottom: 2rem;
+    }
+
+    .carousel-caption h5 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Card Styling */
+    .services-section {
+      padding: 2rem 0 4rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      color: var(--dark-color);
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background-color: var(--primary-color);
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .card img {
+      height: 220px;
+      object-fit: cover;
+      transition: all 0.5s;
+    }
+
+    .card:hover img {
+      transform: scale(1.05);
+    }
+
+    .card-title {
+      font-weight: 700;
+      color: var(--dark-color);
+    }
+
+    .card-text {
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-card {
+      border-radius: 30px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      background-color: var(--primary-color);
+      border: none;
+    }
+
+    .btn-card:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    {% block home1_style %}
+
+    {% endblock home1_style %}
+{% endblock style %}
+
+{% block mainContent %}
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Carousel Section -->
+    <div class="carousel-container">
+      <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{% static 'images/tajmahal2.jpg' %}" class="d-block w-100" alt="Taj Mahal">
+            <div class="carousel-caption">
+              <h5>Taj Mahal</h5>
+              <p>The Taj Mahal, a stunning white marble mausoleum in Agra, India, is a symbol of eternal love and one of the most iconic architectural masterpieces in the world.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'images/goldenTemple.webp' %}" class="d-block w-100" alt="Golden Temple">
+            <div class="carousel-caption">
+              <h5>Golden Temple</h5>
+              <p>The Golden Temple, also known as Harmandir Sahib, is a stunning Sikh gurdwara in Amritsar, India, renowned for its golden architecture and serene spiritual ambiance.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'images/golghar1.jpeg' %}" class="d-block w-100" alt="Golghar">
+            <div class="carousel-caption">
+              <h5>Golghar</h5>
+              <p>Golghar in Patna is an ancient granary built in 1786, offering stunning views of the Ganges River and the city. This iconic dome-shaped structure stands as a testament to Bihar's rich history and architectural heritage.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+      <h2 class="section-title">Our Services</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+          <div class="card h-100">
+            <img src="{% static 'images/hotelImage.jpg' %}" class="card-img-top" alt="Hotel Services">
+            <div class="card-body">
+              <h4 class="card-title">Hotel Bookings</h4>
+              <p class="card-text">Enjoy a memorable stay with breathtaking views and top-notch hospitality with our carefully selected partner hotels. Best rates guaranteed!</p>
+              <a href="{% url 'hotels' %}" class="btn btn-primary btn-card">Book Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card h-100">
+            <img src="{% static 'images/tourism3.jpeg' %}" class="card-img-top" alt="Tourism Services">
+            <div class="card-body">
+              <h4 class="card-title">Tour Packages</h4>
+              <p class="card-text">Get ready for the adventure of a lifetime with our exclusive tour packages. Explore hidden gems and create memories that will last forever!</p>
+              <a href="{% url 'tour' %}" class="btn btn-primary btn-card">Explore Tours</a>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card h-100">
+            <img src="{% static 'images/travelPhoto.jpg' %}" class="card-img-top" alt="Travel Services">
+            <div class="card-body">
+              <h4 class="card-title">Travel Services</h4>
+              <p class="card-text">Effortlessly book your bus and flight tickets through our platform. Enjoy hassle-free travel with instant confirmations and 24/7 support!</p>
+              <a href="{% url 'travel' %}" class="btn btn-primary btn-card">Book Transport</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+   <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>-->
+   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+{% endblock mainContent %}

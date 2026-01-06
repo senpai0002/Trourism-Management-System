@@ -1,0 +1,357 @@
+{% extends 'user_header_footer.html' %}
+
+
+
+
+{% block header_footer_head %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+{% endblock header_footer_head %}
+
+{% block user_header_footer_style %}
+  .booking-form-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: none;
+  }
+  .form-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  .bus-img {
+    height: 200px;
+    object-fit: cover;
+  }
+  .price-display {
+    font-size: 24px;
+    color: #0d6efd;
+  }
+  .bus-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .seat-selection {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  .seat {
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #e9ecef;
+    transition: all 0.2s;
+  }
+  .seat.available:hover {
+    background-color: #d1e7ff;
+  }
+  .seat.selected {
+    background-color: #0d6efd;
+    color: white;
+  }
+  .seat.booked {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+  }
+  .bus-layout {
+    margin: 15px 0;
+    text-align: center;
+  }
+  .driver-seat {
+    background-color: #6c757d;
+    color: white;
+  }
+{% endblock user_header_footer_style %}
+
+{% block mainContent %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card shadow booking-form-card">
+        <h3 class="card-header bg-primary text-white py-3">
+          <i class="bi bi-bus-front me-2"></i>Book Your Bus Ticket
+        </h3>
+
+        <div class="card-body p-4">
+          <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+              <img src="{{ bus_image|default:'/static/images/default_bus.jpg' }}" class="img-fluid rounded bus-img w-100" alt="{{ bus.name }}">
+            </div>
+            <div class="col-md-8">
+              <h3>{{ bus_name|default:"Express Traveller" }}</h3>
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="badge bg-light text-dark"><i class="bi bi-truck me-1"></i>{{ bus_type|default:"Volvo AC Sleeper" }}</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-stars me-1"></i>{{ bus_rating|default:"4.5" }} Rating</span>
+              </div>
+              <p class="mb-2">{{ bus_desc|default:"Premium bus service with comfortable seats, air conditioning, and on-board entertainment."|truncatechars:150 }}</p>
+              
+              <div class="bus-amenities">
+                <span class="badge bg-light text-dark"><i class="bi bi-snow me-1"></i>AC</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-cup-hot me-1"></i>Water</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-outlet me-1"></i>Charging Point</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-tv me-1"></i>Entertainment</span>
+              </div>
+              
+              <div class="price-display mt-2">
+                <span>₹{{ bus_fare|default:"1200" }}</span>
+                <small class="text-muted">per seat</small>
+              </div>
+            </div>
+          </div>
+
+          <form id="bookingForm" method="post" action="{% url 'payment_form' %}">
+            {% csrf_token %}
+            <input type="hidden" name="bus_id" value="{{ bus_id }}">
+            <input type="hidden" name="route_id" value="{{ route_id }}">
+            <input type="hidden" name="selectedSeats" id="selectedSeatsInput" value="">
+            <input type="hidden" name="totalFare" id="totalFareInput" value="">
+            <input type="hidden" name="taxesInput" id="taxesInput" value="">
+            <input type="hidden" name="totalAmountInput" id="totalPayInput" value="">
+
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-geo-alt me-2"></i>Route Details</h4>
+
+              <div class="row g-3">
+                <div class="col-md-5">
+                  <label for="departure" class="form-label">From <span class="text-danger">*</span></label>
+                  <select class="form-select" id="departure" name="departure" required>
+                    <option value="" selected disabled>Select departure city</option>
+                    {% for city in departure_cities %}
+                      <option value="{{ city.id }}">{{ city.name }}</option>
+                    {% empty %}
+                      <option value="1">Delhi</option>
+                      <option value="2">Mumbai</option>
+                      <option value="3">Bangalore</option>
+                      <option value="4">Chennai</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-arrow-right fs-3 text-primary"></i>
+                </div>
+
+                <div class="col-md-5">
+                  <label for="destination" class="form-label">To <span class="text-danger">*</span></label>
+                  <select class="form-select" id="destination" name="destination" required>
+                    <option value="" selected disabled>Select destination city</option>
+                    {% for city in destination_cities %}
+                      <option value="{{ city.id }}">{{ city.name }}</option>
+                    {% empty %}
+                      <option value="1">Delhi</option>
+                      <option value="2">Mumbai</option>
+                      <option value="3">Bangalore</option>
+                      <option value="4">Chennai</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-calendar-event me-2"></i>Journey Details</h4>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="journeyDate" class="form-label">Journey Date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" id="journeyDate" name="journeyDate" required min="{{ today_date }}">
+                  <small class="text-muted">Select your travel date</small>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="passengers" class="form-label">Passengers <span class="text-danger">*</span></label>
+                  <select class="form-select" id="passengers" name="passengers" required>
+                    <option value="1">1 Passenger</option>
+                    <option value="2">2 Passengers</option>
+                    <option value="3">3 Passengers</option>
+                    <option value="4">4 Passengers</option>
+                    <option value="5">5 Passengers</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-grid me-2"></i>Select Your Seat</h4>
+              
+              <div class="seat-selection">
+                <div class="d-flex justify-content-center mb-3">
+                  <div class="me-3">
+                    <span class="badge bg-light text-dark p-2 mb-2 d-flex align-items-center">
+                      <div class="seat me-2" style="width: 20px; height: 20px; background-color: #e9ecef;"></div>
+                      Available
+                    </span>
+                  </div>
+                  <div class="me-3">
+                    <span class="badge bg-light text-dark p-2 mb-2 d-flex align-items-center">
+                      <div class="seat me-2" style="width: 20px; height: 20px; background-color: #0d6efd; color: white;"></div>
+                      Selected
+                    </span>
+                  </div>
+                  <div>
+                    <span class="badge bg-light text-dark p-2 mb-2 d-flex align-items-center">
+                      <div class="seat me-2" style="width: 20px; height: 20px; background-color: #adb5bd;"></div>
+                      Booked
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="bus-layout">
+                  <div class="mb-4 d-flex justify-content-end">
+                    <div class="seat driver-seat" style="cursor: default;">
+                      <i class="bi bi-person"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-0">
+                    <div class="col-md-6">
+                      {% for i in "12345"|make_list %}
+                        <div class="d-flex justify-content-around mb-2">
+                          <div class="seat available" data-seat="A{{i}}" data-price="{{ bus_fare|default:'1200' }}">A{{i}}</div>
+                          <div class="seat available" data-seat="B{{i}}" data-price="{{ bus_fare|default:'1200' }}">B{{i}}</div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                      {% for i in "12345"|make_list %}
+                        <div class="d-flex justify-content-around mb-2">
+                          <div class="seat available" data-seat="C{{i}}" data-price="{{ bus_fare|default:'1200' }}">C{{i}}</div>
+                          <div class="seat available" data-seat="D{{i}}" data-price="{{ bus_fare|default:'1200' }}">D{{i}}</div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <div class="text-muted mt-2">
+                    <small>The seat layout is for illustration purposes. Actual bus layout may vary.</small>
+                  </div>
+                </div>
+                
+                <div class="selected-seats mt-3">
+                  <p class="mb-1">Selected Seats: <span id="selectedSeatsDisplay">None</span></p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-person-lines-fill me-2"></i>Passenger Details</h4>
+              
+              <div id="passengerDetails">
+                <div class="passenger-form mb-3 p-3 border rounded">
+                  <h5 class="mb-3">Passenger 1</h5>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="passenger1Name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" id="passenger1Name" name="passenger1Name" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="passenger1Age" class="form-label">Age <span class="text-danger">*</span></label>
+                      <input type="number" class="form-control" id="passenger1Age" name="passenger1Age" min="1" max="120" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="passenger1Gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                      <select class="form-select" id="passenger1Gender" name="passenger1Gender" required>
+                        <option value="" selected disabled>Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="passenger1SeatNo" class="form-label">Seat No.</label>
+                      <input type="text" class="form-control" id="passenger1SeatNo" name="passenger1SeatNo" readonly>
+                    </div>
+                  </div>
+                </div>
+                <!-- Additional passenger forms will be added dynamically by JavaScript -->
+              </div>
+            </div>
+
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-telephone me-2"></i>Contact Information</h4>
+              
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="contactEmail" class="form-label">Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" id="contactEmail" name="contactEmail" required>
+                  <small class="text-muted">E-ticket will be sent to this email</small>
+                </div>
+                <div class="col-md-6">
+                  <label for="contactPhone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control" id="contactPhone" name="contactPhone" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section p-3 mb-4">
+              <h4 class="mb-3"><i class="bi bi-credit-card me-2"></i>Payment Details</h4>
+
+              <div id="priceCalculation" class="p-3 border rounded">
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Bus Fare (<span id="seatCount">0</span> seats × ₹{{ bus_fare|default:"1200" }})</span>
+                  <span>₹ <span id="fareTotal">0</span></span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Taxes & Fees (5%)</span>
+                  <span>₹ <span id="taxes">0</span></span>
+                </div>
+                <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+                  <strong>Total Amount</strong>
+                  <strong>₹ <strong class="text-primary" id="totalAmount">0</strong></strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" id="termsCheck" required>
+              <label class="form-check-label" for="termsCheck">
+                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+              </label>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Proceed to Payment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6>Cancellation Policy</h6>
+        <p>Cancellations made 24 hours before departure will receive a 75% refund. No refunds for cancellations made within 24 hours of departure.</p>
+
+        <h6>Boarding Policy</h6>
+        <p>Passengers must arrive at least 15 minutes before the scheduled departure time. Please carry a valid ID proof for verification.</p>
+
+        <h6>Baggage Policy</h6>
+        <p>Each passenger is allowed one piece of luggage up to 15kg and one cabin bag up to 7kg. Additional luggage may incur extra charges.</p>
+        
+        <h6>Payment Policy</h6>
+        <p>All online payments are secure and processed via our payment gateway. Your booking is confirmed only after successful payment.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

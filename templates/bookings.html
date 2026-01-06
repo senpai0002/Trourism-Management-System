@@ -1,0 +1,312 @@
+
+
+{% extends 'user_header_footer.html' %}
+
+{% block user_header_footer_style %}
+    <!--    body {-->
+    <!--  font-family: 'Arial', sans-serif;-->
+    <!--  background-color: #f5f7fa;-->
+
+    <!--}-->
+    .main-container{
+        margin-top: 20px;
+        min-height: 600px;
+    }
+    .booking-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 25px;
+      margin-top: 20px;
+      margin-bottom: 100px;
+    }
+
+    .nt {
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 20px;
+    }
+
+    .nt .nl {
+      color: #666;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+
+    .nt .nl.active {
+      color: #4285F4;
+      background: transparent;
+      border-bottom: 2px solid #4285F4;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table th {
+      border-top: none;
+      color: #555;
+      font-weight: 600;
+      background-color: #f9f9f9;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+    }
+{% endblock user_header_footer_style %}
+
+{% block mainContent %}
+
+<div class="main-container container">
+    <h3 class="mb-4">My Bookings</h3>
+
+    <div class="booking-container">
+      <ul class="nav nav-tabs nt" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link nl active" id="hotel-tab" data-bs-toggle="tab" data-bs-target="#hotel-tab-pane" type="button" role="tab" aria-controls="hotel-tab-pane" aria-selected="true">Hotel</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link nl" id="tour-tab" data-bs-toggle="tab" data-bs-target="#tour-tab-pane" type="button" role="tab" aria-controls="tour-tab-pane" aria-selected="false">Tour</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link nl" id="travel-tab" data-bs-toggle="tab" data-bs-target="#travel-tab-pane" type="button" role="tab" aria-controls="travel-tab-pane" aria-selected="false">Travel</button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="hotel-tab-pane" role="tabpanel" aria-labelledby="hotel-tab" tabindex="0">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>Name</th>
+                <th>Booked_At</th>
+                <th>Reciept</th>
+              </tr>
+            </thead>
+            <tbody>
+               {% for userBooking in userBookings %}
+              <tr>
+                <td>#TX-{{ userBooking.id }}</td>
+                <td>{{ userBooking.hotel.name }}</td>
+                <td>{{ userBooking.booked_at }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#receiptModal{{ userBooking.id }}">View</button>
+                </td>
+              </tr>
+
+              <div class="modal fade" id="receiptModal{{ userBooking.id }}" tabindex="-1" aria-labelledby="receiptModalLabel" >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="receiptModalLabel">Hotel Receipt</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id = "receiptContainer{{ userBooking.id }}">
+                        <div class="receipt-header">
+                            <p>Transaction ID: #TX-{{ userBooking.id }}</p>
+                            <h4>{{ userBooking.hotel.name }}</h4>
+                            <p>Hotel ID: #HT-{{ userBooking.hotel.id }} | {{ userBooking.hotel.place }} | {{ userBooking.type }}</p>
+                        </div>
+
+                        <div class="receipt-items">
+                            <div class="receipt-item">
+                                <span>Customer Name: </span>
+                                <span>{{ userBooking.name }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Check-In-Date: </span>
+                                <span>{{ userBooking.checkInDate }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Check-Out-Date: </span>
+                                <span>{{ userBooking.checkOutDate }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Rent: </span>
+                                <span>₹{{ userBooking.rent }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Tax(18%): </span>
+                                <span>₹{{ userBooking.tax }} </span>
+                            </div>
+                            <div class="receipt-item receipt-total">
+                                <span>Total: </span>
+                                <span>₹{{ userBooking.totalPayable }}</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-footer">
+                            <p>Payment Method: Debit Card/Credit Card</p>
+                            <p>Thank you for choosing to stay with us.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id = "downloadPdfButton{{ userBooking.id }}" onclick="pdfDownload({{ userBooking.id }})">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+
+
+              {% endfor %}
+               {% if not userBookings %}
+              <tr>
+                <td colspan="4">
+                  <div class="empty-message">
+                    <p>No hotel bookings found.</p>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+
+        <!--Tours-->
+        <div class="tab-pane fade" id="tour-tab-pane" role="tabpanel" aria-labelledby="tour-tab" tabindex="0">
+                      <table class="table">
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>Name</th>
+                <th>Booked_At</th>
+                <th>Reciept</th>
+              </tr>
+            </thead>
+            <tbody>
+               {% for tourBooking in tourBookings %}
+              <tr>
+                <td>#TX-{{ tourBooking.id }}</td>
+                <td>{{ tourBooking.tour.tour_name }}</td>
+                <td>{{ tourBooking.booked_at }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#receiptModal{{ tourBooking.id }}">View</button>
+                </td>
+              </tr>
+
+
+            <!--Tour reciept-->
+              <div class="modal fade" id="receiptModal{{ tourBooking.id }}" tabindex="-1" aria-labelledby="receiptModalLabel" >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="receiptModalLabel">Tour Receipt</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id = "receiptContainer{{ tourBooking.id }}">
+                        <div class="receipt-header">
+                            <p>Transaction ID: #TX-{{ tourBooking.id }}</p>
+                            <h4>{{ tourBooking.hotel.name }}</h4>
+                            <p>Tour ID: #TTX-{{ tourBooking.tour.id }} | {{ tourBooking.tour.tour_name }} | {{ tourBooking.tour.city }} </p>
+                        </div>
+
+                        <div class="receipt-items">
+                            <div class="receipt-item">
+                                <span>Customer Name: </span>
+                                <span>{{ tourBooking.name }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Check-In-Date: </span>
+                                <span>{{ tourBooking.bookingDate }}</span>
+                            </div>
+                            <!--<div class="receipt-item">-->
+                            <!--    <span>Check-Out-Date: </span>-->
+                            <!--    <span>{{ tourBooking.tour.days }}</span>-->
+                            <!--</div>-->
+                            <div class="receipt-item">
+                                <span>Rent: </span>
+                                <span>₹{{ tourBooking.rent }}</span>
+                            </div>
+                            <div class="receipt-item">
+                                <span>Tax(18%): </span>
+                                <span>₹{{ tourBooking.tax }} </span>
+                            </div>
+                            <div class="receipt-item receipt-total">
+                                <span>Total: </span>
+                                <span>₹{{ tourBooking.totalPayable }}</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-footer">
+                            <p>Payment Method: Debit Card/ Credit Card</p>
+                            <p>Thank you for choosing to stay with us.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id = "downloadPdfButton{{ tourBooking.id }}" onclick="pdfDownload({{ tourBooking.id }})">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+              {% endfor %}
+               {% if not tourBookings %}
+              <tr>
+                <td colspan="4">
+                  <div class="empty-message">
+                    <p>No Tour bookings found.</p>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <!--Travel-->
+        <div class="tab-pane fade" id="travel-tab-pane" role="tabpanel" aria-labelledby="travel-tab" tabindex="0">
+          <div class="empty-message">
+            <p>No travels booked yet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    function pdfDownload(tranxId){
+        // Get the receipt container using the userBookingId
+        const element = document.getElementById("receiptContainer"+ tranxId);
+        // console.log(element)
+        if (element) {
+            const options = {
+                filename: 'HotelReceipt.pdf',
+                margin: [10, 10, 20, 10], // Top, left, bottom, right margins
+                image: { type: 'jpeg', quality: 0.98 }, // High-quality images
+                html2canvas: { scale: 2, backgroundColor: null }, // Higher resolution, transparent background
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, // A4 size and portrait layout
+            };
+            // Generate the PDF and trigger download
+            html2pdf().set(options).from(element).save();
+        }
+        else {
+            console.error("Receipt container not found for userBookingId:", userBookingId);
+        }
+    }
+  </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootsscript>trap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock mainContent %}

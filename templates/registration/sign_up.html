@@ -1,0 +1,180 @@
+{% extends "header_footer.html" %}
+
+{% block style %}
+           body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .signup-container {
+            max-width: 450px;
+            margin: 80px auto;
+        }
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: none;
+            padding: 25px 0 0 0;
+        }
+        .signup-title {
+            color: #28a745;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .form-control {
+            height: 50px;
+            border-radius: 8px;
+            box-shadow: none;
+            border: 1px solid #e1e1e1;
+            padding-left: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .btn-signup {
+            height: 50px;
+            border-radius: 8px;
+            background-color: #28a745;
+            border-color: #28a745;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .btn-signup:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .login-link {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .separator {
+            border-top: 1px solid #e1e1e1;
+            margin: 20px 0;
+        }
+        .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+{% endblock style %}
+
+{% block mainContent %}
+    <!--<h2>Sign Up</h2>-->
+    <!--<form method="post">-->
+    <!--    {% csrf_token %}-->
+    <!--    {{ form.as_p }}-->
+    <!--    <input type="submit" value="Sign Up" />-->
+    <!--</form>-->
+    <!--<p>-->
+    <!--    <a href="{% url 'home' %}">Back to Home</a>-->
+    <!--</p>-->
+
+
+
+        <div class="container">
+        <div class="signup-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="signup-title">Sign Up</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="container">
+                        {% csrf_token %}
+
+                        <div class="separator"></div>
+
+                        {% if messages %}
+                        <div class="alert alert-primary" role="alert">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <!--<input type="text" class="form-control" name="name" id="username"-->
+                                <!--placeholder="Choose a username" required>-->
+                                {{ form.username }}
+                        </div>
+
+                     <!--<div class="mb-3">-->
+                     <!--       <label for="email" class="form-label">Email</label>-->
+                     <!--       <input type="email" class="form-control" name="email" id="email"-->
+                     <!--           placeholder="Enter your email" required>-->
+                     <!--   </div>   -->
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <!--<input type="password" name="password1" class="form-control"-->
+                            <!--    id="password" placeholder="Create a password" required>-->
+                            {{ form.password1 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <!--<input type="password" name="password2" class="form-control"-->
+                            <!--    id="confirm_password" placeholder="Confirm your password" required>-->
+                            {{ form.password2 }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <div class="d-flex gap-4 mb-2">
+                                {% for radio in form.gender %}
+                                <div class="form-check">
+                                    <!--<input class="form-check-input" type="radio" name="gender" id="male" value="male" required>-->
+                                    {{ radio.tag }}
+                                    <label class="form-check-label" for="male">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+
+                                <!--<div class="form-check">-->
+                                <!--    <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>-->
+                                <!--    <label class="form-check-label" for="female">-->
+                                <!--        Female-->
+                                <!--    </label>-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-signup">Sign Up</button>
+
+                        <div class="login-link text-center">
+                            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock mainContent %}
+
+{% block script %}
+            // Simple client-side password matching validation
+        document.getElementById('container').addEventListener('submit', function(event) {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm_password').value;
+
+            if (password != confirmPassword) {
+                event.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+{% endblock script %}

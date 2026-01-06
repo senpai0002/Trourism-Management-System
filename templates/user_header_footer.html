@@ -1,0 +1,56 @@
+{% extends 'header_footer.html' %}
+
+{% load static %}
+
+
+{% block style %}
+    #accountLogo{
+        height: 30px;
+    }
+    #dropdownButton{
+        border-radius: 20px;
+        padding: 0.5rem 1.5rem;
+        background-color: white;
+        border-width: 0px;
+
+    }
+    #userNameBlock{
+        padding-right: 0.4rem;
+        padding-vertical: 1.5rem;
+        text-transform: capitalize;
+    }
+    {% block user_header_footer_style %}
+    {% endblock user_header_footer_style %}
+{% endblock style %}
+
+
+
+{% block userLogo %}
+    {% if user.is_authenticated %}
+                <div class="btn-group">
+                    <button id = "dropdownButton" type="button" class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                    <span id = "userNameBlock" ><b>{{ user.username }}</b></span><span><img id = "accountLogo" src = {% static "images/male_user.png" %}></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+
+                    <li><button class="dropdown-item" type="button" onclick = "window.location.href = '{% url 'bookings' %}'">Bookings</button></li>
+                    <li>
+                                    <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button class="dropdown-item" type="submit">Log Out</button>
+            </form>
+                    </li>
+                    </ul>
+                </div>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+
+{% endblock userLogo%}
+
+      {% block script %}
+
+        {% block user_header_footer_script %}
+
+        {% endblock user_header_footer_script %}
+      {% endblock script %}

@@ -1,0 +1,187 @@
+
+{% extends 'user_header_footer.html' %}
+
+
+
+{% block user_header_footer_style %}
+      body {
+    background-color: #f8f9fa;
+  }
+
+  .hotel-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .hotel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+
+  .object-fit-cover {
+    object-fit: cover;
+  }
+
+  .hover-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hover-effect::after {
+    content: "Book Now";
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    background: #0d6efd;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: top 0.3s ease;
+    font-weight: 500;
+  }
+
+  .hover-effect:hover::after {
+    top: 20px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .hotel-card .card-body {
+      padding: 1rem;
+    }
+
+    .hover-effect::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 576px) {
+    h3.card-title {
+      font-size: 1.3rem;
+    }
+  }
+
+  .capitalize{
+    text-transform: capitalize
+  }
+{% endblock user_header_footer_style %}
+
+{% block mainContent %}
+
+
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10" >
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="text-center mb-4">Find Your Perfect Stay</h3>
+          <form class="row g-3 align-items-end justify-content-center" method = "get" action = "{% url 'hotels' %}">
+            <div class="col-md-5 col-sm-12">
+              <label for="destination" class="form-label">Destination</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <input type="text" class="form-control" id="destination" placeholder="Where are you going?" name = "location">
+              </div>
+            </div>
+            <!--<div class="col-md-4 col-sm-12">-->
+            <!--  <label for="hotelType" class="form-label">Hotel Type</label>-->
+            <!--  <select class="form-select" name="hotelType">-->
+            <!--    <option selected value = "">Choose...</option>-->
+            <!--    <option value="standard">Standard</option>-->
+            <!--    <option value="deluxe">Deluxe</option>-->
+            <!--    <option value="premium">Premium</option>-->
+            <!--  </select>-->
+            <!--</div>-->
+            <div class="col-md-3 col-sm-12">
+              <button type="submit" class="btn btn-primary w-100">Find Hotels</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hotel Listings Section -->
+<div class="container mb-5">
+
+    {% if not room_list %}
+      <!-- No results message (hidden by default) -->
+      <div class="text-center py-5" id="noResults">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <h3 class="mt-3">No hotels found</h3>
+        <p class="text-muted">Try adjusting your search criteria</p>
+      </div>
+
+      {% else %}
+  <h2 class="text-center mb-4">Available Hotels</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      {% for room in room_list %}
+      {% if room.roomsRemaining > 0 %}
+      <form method = "post" id = "UserBookingForm{{ room.id }}" >
+          {% csrf_token %}
+          <input type = "hidden" name = "hotel_id" id = "hotel_id_{{ room.id }}" value = "{{room.id}}">
+          <input type = "hidden" name = "hotel_name" id = "hotel_name_{{ room.id }}" value = "{{room.name}}">
+          <input type = "hidden" name = "hotel_place" id = "hotel_place_{{ room.id }}" value = "{{room.place}}">
+          <!--<input type = "hidden" name = "hotel_type" id = "hotel_type_{{ room.id }}" value = "{{room.type}}">-->
+          <input type = "hidden" name = "hotel_desc" id = "hotel_desc_{{ room.id }}" value = "{{room.Description}}">
+          <input type = "hidden" name = "hotel_rent" id = "hotel_rent_{{ room.id }}" value = "{{room.pricePerNight}}">
+          <input type = "hidden" name = "hotel_image" id = "hotel_image_{{ room.id }}" value = "{{ room.roomImage.url }}">
+          <!--<input type = "hidden" value = "{{ user.id }}" name = "user_id">-->
+      <div class="card mb-4 hotel-card shadow-sm hover-effect" onclick="handleFormSubmit({{ room.id }})">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="{{room.roomImage.url}}" class="img-fluid rounded-start h-100 w-100 object-fit-cover" alt="{{ room.name }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body d-flex flex-column h-100">
+              <div>
+                <h3 class="card-title">{{ room.name }}</h3>
+                <div class="d-flex flex-wrap gap-3 mb-2">
+                  <!--<span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ room.id }}</span>-->
+                  <!--<span class="badge bg-light text-dark capitalize"><i class="bi bi-building me-1"></i>{{ room.type }}</span>-->
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ room.place }}</span>
+                  <span class="badge bg-light text-dark capitalize"><i class="bi bi-geo-alt me-1"></i>{{ room.roomsRemaining }} rooms left</span>
+                </div>
+                <p class="card-text">{{ room.Description }}</p>
+              </div>
+              <div class="mt-auto text-end">
+                <div class="d-flex justify-content-between align-items-center">
+                  <button class="btn btn-outline-primary btn-sm">View Details</button>
+                  <div>
+                    <p class="text-muted mb-0">per night</p>
+                    <h4 class="text-primary mb-0">₹{{ room.pricePerNight }}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+{% endif %}
+    </div>
+  </div>
+</div>
+
+            <script>
+                function bookingConfirmation(){
+                    window.location.href = "/bookingConfirmation/"
+                }
+                function handleFormSubmit(roomId){
+                    const form = document.getElementById('UserBookingForm'+roomId);
+                    form.action = "/bookingConfirmation/";
+                    form.submit();
+
+                }
+            </script>
+
+{% endblock mainContent %}
+
+
+
+
+
