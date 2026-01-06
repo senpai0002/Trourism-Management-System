@@ -52,23 +52,23 @@ The primary objective of **TravelBuddy** is to provide a centralized, efficient,
 [**Login Page**](https://nobara.pythonanywhere.com/accounts/login/)
 <img width="1402" height="972" alt="Login Page" src="https://github.com/user-attachments/assets/57dffa3f-81e4-43b0-ac16-e5efa52324f3" />
 
-**Register Page**  
+[**Register Page**](https://nobara.pythonanywhere.com/accounts/sign_up/)  
 <img width="1137" height="910" alt="Register Page" src="https://github.com/user-attachments/assets/1a01005c-3b6c-4a96-a90b-0bc8dbbe5d26" />
 
 ---
 
-### 🏨 Hotel Booking
+### 🏨 [Hotel Booking](https://nobara.pythonanywhere.com/hotels/)
 <img width="1331" height="909" alt="Hotel Booking 1" src="https://github.com/user-attachments/assets/0093c76e-f6a2-4352-8e66-b1abf67cb29c" />  
 <img width="1317" height="985" alt="Hotel Booking 2" src="https://github.com/user-attachments/assets/3159626d-6cb5-45ad-b48a-404454de1fb3" />
 
 ---
 
-### 🗺️ Tour Packages
+### 🗺️ [Tour Packages](https://nobara.pythonanywhere.com/tourism/)
 <img width="1273" height="999" alt="Tour Packages" src="https://github.com/user-attachments/assets/fdd1948c-1571-4e12-81a5-2290771a9468" />
 
 ---
 
-### 🛠️ Admin Dashboard
+### 🛠️ [Admin Dashboard](https://nobara.pythonanywhere.com/adminLogin/)
 <img width="1857" height="985" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/361bdc1a-10e4-42a1-be10-abf630048b6c" />
 
 ---
