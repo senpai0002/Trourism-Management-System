@@ -68,4 +68,23 @@ The primary objective of **TravelBuddy** is to provide a centralized, efficient,
 
 ---
 
-### 🛠️ Admin
+### 🛠️ Admin Dashboard
+<img width="1857" height="985" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/361bdc1a-10e4-42a1-be10-abf630048b6c" />
+
+---
+
+## 🚀 Deployment
+The project is deployed on **PythonAnywhere** and is production-ready with proper configuration for static files, database, and security settings.  
+
+🔗 **Live Demo:** [TravelBuddy on PythonAnywhere](https://nobara.pythonanywhere.com/)
+
+---
+
+## 🔮 Future Enhancements
+- 💳 Online payment gateway integration  
+- 🔍 Advanced search and filtering (budget, ratings, dates)  
+- 📊 Analytics dashboard for bookings and revenue  
+- 👥 Role-based sub-admin access (hotel/travel agencies)  
+- 📱 Mobile application integration  
+
+---
