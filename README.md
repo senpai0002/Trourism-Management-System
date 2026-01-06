@@ -44,10 +44,11 @@ Admin Module – Full control over platform data and users
 Add your project screenshots inside a screenshots/ folder in the repository and update the image paths accordingly.
 
 ## 🔐 User Authentication
-![Login Page](screenshots/login.png)
+![Login Page](https://nobara.pythonanywhere.com/accounts/login/)
 <img width="1402" height="972" alt="image" src="https://github.com/user-attachments/assets/57dffa3f-81e4-43b0-ac16-e5efa52324f3" />
 
-![Register Page](Screenshot 2026-01-06 180349.png)
+![Register Page]
+
 
 ## 🏨 Hotel Booking
 ![Hotel Booking](Screenshot 2026-01-06 180443.png)
