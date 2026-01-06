@@ -1,0 +1,74 @@
+🌍 TravelBuddy – Tourism Management System
+
+TravelBuddy is a full-stack Django-based Tourism Management System developed to streamline and centralize travel-related services such as hotel bookings, travel reservations (bus & flight), and tour package management. The application delivers a smooth and secure user experience while providing administrators with complete control over platform operations through a robust admin panel.
+
+This project demonstrates practical implementation of web application development, database management, and user authentication using modern frameworks and tools.
+
+✨ Key Features
+
+Secure user authentication (registration & login)
+
+Hotel booking system with city-based filtering
+
+Travel booking module for buses and flights
+
+Tour package exploration and booking
+
+User booking history dashboard
+
+Admin panel for managing users, hotels, travel, tours, and bookings
+
+Responsive and mobile-friendly UI
+
+Scalable and modular architecture
+
+🛠️ Technology Stack
+Layer	Technologies
+Backend	Django (Python)
+Database	SQLite (Development), MySQL (Production-ready)
+Frontend	HTML, CSS, Bootstrap, JavaScript
+Deployment	PythonAnywhere
+Tools	Visual Studio Code
+
+🎯 Project Objective
+The primary objective of TravelBuddy is to provide a centralized, efficient, and secure tourism management platform that simplifies booking operations for users while enabling administrators to manage travel services effectively through a single interface.
+
+🧩 Core Modules
+User Management Module – Registration, login, session handling
+Hotel Module – Hotel listings, availability, and bookings
+Travel Module – Bus and flight search & booking
+Tour Module – Curated tour packages with booking support
+Admin Module – Full control over platform data and users
+
+📸 Screenshots
+Add your project screenshots inside a screenshots/ folder in the repository and update the image paths accordingly.
+
+## 🔐 User Authentication
+![Login Page](screenshots/login.png)
+<img width="1402" height="972" alt="image" src="https://github.com/user-attachments/assets/57dffa3f-81e4-43b0-ac16-e5efa52324f3" />
+
+![Register Page](Screenshot 2026-01-06 180349.png)
+
+## 🏨 Hotel Booking
+![Hotel Booking](Screenshot 2026-01-06 180443.png)
+
+![Hotel Booking](Screenshot 2026-01-06 180457.png)
+
+## 🗺️ Tour Packages
+![Tour Packages](Screenshot 2026-01-06 180549.png)
+
+## 🛠️ Admin Dashboard
+![Admin Dashboard](Screenshot 2026-01-06 180642.png)
+
+
+🚀 Deployment
+The project is deployed on PythonAnywhere and is production-ready with proper configuration for static files, database, and security settings.
+🔗 Live Demo: https://nobara.pythonanywhere.com/
+
+
+🔮 Future Enhancements
+Online payment gateway integration
+Advanced search and filtering (budget, ratings, dates)
+Analytics dashboard for bookings and revenue
+Role-based sub-admin access (hotel/travel agencies)
+Mobile application integration
